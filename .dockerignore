@@ -1,0 +1,19 @@
+# Ignore all .pyc files and __pycache__ directories
+*.pyc
+__pycache__/
+
+# Ignore the data directory
+data/
+
+# Ignore README file
+README.md
+
+# Ignore all YAML files
+*.yaml
+
+# (Optional) Ignore other common development files
+.env
+.idea/
+.vscode/
+.DS_Store
+.venv/
