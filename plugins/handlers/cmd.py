@@ -13,6 +13,7 @@ from helpers.video_meta_data import META
 from helpers.display_progress import progress_for_pyrogram
 from ..handlers.testline import find_strings_from_txt
 from pprint import pformat
+from ..handlers.Translate_gpt import Translate_text
 
 # Define the InlineKeyboardMarkup
 _cmd_button = InlineKeyboardMarkup(
@@ -231,6 +232,11 @@ async def cmd(client, callback_query):
                 )
             else:
                 await callback_query.message.reply_text("No photo to process.")
+        elif response == "gentr":
+            await Translate_text(client, callback_query)
+            """text = await message.text
+            await message.reply_text("This is An Text", text)
+            return await message.reply_text("Futures Will be Available!")"""
 
         elif response == "about_gmail":
             await callback_query.edit_message_text("About Gmail!")

@@ -3,6 +3,7 @@ from pyrogram import Client
 from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from configparser import ConfigParser
+from random import randint
 
 config = ConfigParser()
 config.read('config.ini')
@@ -43,3 +44,19 @@ async def ForceSub(bot: Client, cmd: Message):
             text="Something Went Wrong.)",
         )
         return 400
+
+
+class Verify_user:
+    def __init__(self):
+        pass
+
+
+    def check_user(self, user_id):
+        pass
+
+
+
+    def robot(self, inp):
+        f1 = randint(5, 9)
+        f2 = randint(1, 4)
+        
