@@ -8,12 +8,12 @@ def write_text(text):
     return "temp.txt"
 
 
-@Client.on_message(filters.command("txt"))
+@Client.on_message(filters.command("txt", ["/", "."]))
 async def text_cmd(bot: Client, cmd: Message):
-    if cmd.reply_to_message:
+    if cmd.reply_to_message and cmd.reply_to_message.text:
         text_to_write = cmd.reply_to_message.text
     elif cmd.text:
-        text_to_write = cmd.text[len("/txt") :]
+        text_to_write = cmd.text.split(maxsplit=1)[1] if len(cmd.text.split()) > 1 else ""
     else:
         await cmd.reply("<b>⎚ Please use <code>/txt text to Create txt File</code></b>")
         return

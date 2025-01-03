@@ -205,7 +205,7 @@ def ocr_image_single(image_path):
 
 # Command handler for OCR command
 @Client.on_message(
-    filters.command("ocr") | filters.group | filters.photo | filters.regex(r"ocrdata")
+    filters.command("ocr", ["/", "."]) | filters.group | filters.photo | filters.regex(r"ocrdata")
 )
 async def ocr_command(client, message):
     status = await message.reply_text("<b>⎚ `Processing images...`</b>")

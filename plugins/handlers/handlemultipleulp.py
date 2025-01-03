@@ -7,33 +7,30 @@ from time import perf_counter
 import time
 import chardet
 from helpers.timemanager import run_sync_in_thread_running_loop
+import wget
 
-
-@Client.on_message(filters.command('ulpscr'))
+@Client.on_message(filters.command('ulpscr', ['/', '.']))
 async def line_scraper(bot: Client, cmd: Message):
-    if cmd.reply_to_message and cmd.reply_to_message.document:
-        status = await cmd.reply_text('<b>⎚ `Processing...`</b>')
-        STATUS_ID = '<b>⎚ `Downloading The Text File...`</b>'
-        document = cmd.reply_to_message.document
-        find_str = cmd.text.split('/lscr', 1)[1].strip()
-        if document.mime_type == 'text/plain' and find_str:
-            try:
-                start_time = time.time()
-                file_name = document.file_name
-                user_folder = f'downloads/{cmd.from_user.id}'
-                file_path = file_path = os.path.join(user_folder, file_name)
-                if not os.path.exists(user_folder):
-                    os.makedirs(user_folder)
-                #await bot.download_media(document, file_name=file_path,progress=progress_for_pyrogram, progress_args=(STATUS_ID, status, file_name,start_time))
-                await cmd.reply_to_message.download(file_name=file_path, progress=progress_for_pyrogram, progress_args=(STATUS_ID, status, file_name, start_time))
-                await find_strings_from_txt(find_str, file_path, status, bot)
-            except Exception as e:
-                await status.edit_text(f'<b>Error Bot: {e}</b>')
-                os.remove(file_path)
-        else:
-            await status.edit_text('<b>Please send a text file with your finder string</b>')
-    else:
-        await cmd.reply_text('<b>Please send a text file for lines!</b>')    
+    if len(cmd.command) < 3:
+        await cmd.reply_text('<b>Please provide a URL and a keyword.</b>')
+        return
+
+    url = cmd.command[1]
+    find_str = cmd.command[2]
+    status = await cmd.reply_text('<b>⎚ `Downloading The Text File...`</b>')
+
+    try:
+        user_folder = f'downloads/{cmd.from_user.id}'
+        if not os.path.exists(user_folder):
+            os.makedirs(user_folder)
+        file_path = os.path.join(user_folder, 'downloaded_file.txt')
+        wget.download(url, file_path)
+        await find_strings_from_txt(find_str, file_path, status, bot)
+        os.remove(file_path)
+    except Exception as e:
+        await status.edit_text(f'<b>Error Bot: {e}</b>')
+        if os.path.exists(file_path):
+            os.remove(file_path)
                 
             
 

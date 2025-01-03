@@ -5,12 +5,14 @@ from pyrogram import Client, filters, enums
 from helpers.c_video import get_size
 from pyrogram.types import Message
 from datetime import datetime
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
-import logging
 from ..group.group_helper.admin import admin_filter
 
-#=====================================================
-@Client.on_message((filters.user(555994473) | filters.create(admin_filter)) & filters.command('speedtest'))
+
+# =====================================================
+@Client.on_message(
+    (filters.user(555994473) | filters.create(admin_filter))
+    & filters.command("speedtest", ["/", "."])
+)
 async def speedtest(client, message):
     msg = await message.reply_text("`Speedtest...`")
     try:
@@ -23,8 +25,8 @@ async def speedtest(client, message):
     speed.upload()
     speed.results.share()
     result = speed.results.dict()
-    photo = result['share']
-    text = f'''
+    photo = result["share"]
+    text = f"""
 ➲ <b>SPEEDTEST INFO</b>
 ┠ <b>Upload:</b> <code>{get_size(result['upload'])}/s</code>
 ┠ <b>Download:</b>  <code>{get_size(result['download'])}/s</code>
@@ -48,16 +50,16 @@ async def speedtest(client, message):
 ┠ <b>Country:</b> <code>{result['client']['country']}</code>
 ┠ <b>ISP:</b> <code>{result['client']['isp']}</code>
 ┖ <b>ISP Rating:</b> <code>{result['client']['isprating']}</code>
-'''
+"""
     await message.reply_photo(photo=photo, caption=text)
     await msg.delete()
 
 
-@Client.on_message(filters.command('restart') & filters.user(555994473))
+@Client.on_message(filters.command("restart") & filters.user(555994473))
 async def restart(bot: Client, cmd: Message):
     """with open('restart.txt', 'w+') as restart:
-        restart.write(f'{msg.chat.id}\n{msg.id}')"""
+    restart.write(f'{msg.chat.id}\n{msg.id}')"""
     msg = await cmd.reply("<b>⎚ `Restarting...`</b>")
     time.sleep(2)
     await msg.edit_text("<b>`✅️ Successfully Bot Restarted`</b>")
-    os.execl(sys.executable, sys.executable, 'bot.py')
+    os.execl(sys.executable, sys.executable, "bot.py")

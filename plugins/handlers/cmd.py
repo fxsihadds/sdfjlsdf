@@ -14,18 +14,19 @@ from helpers.display_progress import progress_for_pyrogram
 from ..handlers.testline import find_strings_from_txt
 from pprint import pformat
 from ..handlers.Translate_gpt import Translate_text
+from pyrogram.errors import MessageNotModified  # Import the MessageNotModified error
 
 # Define the InlineKeyboardMarkup
 _cmd_button = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton("ᵀᵒᵒˡ", callback_data="tool"),
-            InlineKeyboardButton("ᶜʰᵉᶜᵏᵉʳˢ", callback_data="checkers"),
-            InlineKeyboardButton("ᴳᵃᵗᵉˢ", callback_data="gates"),
+            InlineKeyboardButton("Tool", callback_data="tool"),
+            InlineKeyboardButton("Checkers", callback_data="checkers"),
+            InlineKeyboardButton("Gates", callback_data="gates"),
         ],
         [
-            InlineKeyboardButton("ᴬᵈᵐⁱⁿ", callback_data="admin"),
-            InlineKeyboardButton("ᶜˡᵒˢᵉ", callback_data="closed"),
+            InlineKeyboardButton("Admin", callback_data="admin"),
+            InlineKeyboardButton("Close", callback_data="closed"),
         ],
     ]
 )
@@ -33,13 +34,13 @@ _cmd_button = InlineKeyboardMarkup(
 tools_Click = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton("ᶜʰᵉᶜᵏᵉʳˢ", callback_data="checkers"),
-            InlineKeyboardButton("ᴳᵃᵗᵉˢ", callback_data="gates"),
-            InlineKeyboardButton("ᴼᵗʰᵉʳˢ", callback_data="others"),
+            InlineKeyboardButton("Checkers", callback_data="checkers"),
+            InlineKeyboardButton("Gates", callback_data="gates"),
+            InlineKeyboardButton("Others", callback_data="others"),
         ],
         [
-            InlineKeyboardButton("ᴬᵈᵐⁱⁿ", callback_data="admin"),
-            InlineKeyboardButton("ᶜˡᵒˢᵉ", callback_data="closed"),
+            InlineKeyboardButton("Admin", callback_data="admin"),
+            InlineKeyboardButton("Close", callback_data="closed"),
         ],
     ]
 )
@@ -56,51 +57,57 @@ buttons = InlineKeyboardMarkup(
 )
 
 
-tools = """<i>𝔄𝔳𝔞𝔦𝔩𝔞𝔟𝔩𝔢 𝔠𝔬𝔪𝔫𝔞𝔫𝔡𝔰:</i>\n
-<b>/𝔤𝔰𝔠𝔯</b> - ℬ𝔬𝔪𝔟𝔬 𝔖𝔠𝔯𝔞𝔭𝔢\n
-<b>/𝔲𝔰𝔠𝔯</b> - ℬ𝔬𝔪𝔟𝔬 𝔲𝔰𝔢𝔯:𝔭𝔞𝔰𝔰, 𝔫𝔲𝔪𝔟𝔢𝔯:𝔭𝔞𝔰𝔰 𝔞𝔫𝔡 𝔢𝔪𝔞𝔦𝔩:𝔭𝔞𝔰𝔰\n
-<b>/𝔭𝔞𝔰𝔱𝔢</b> - ℬ𝔬𝔪𝔟𝔬 𝔸𝔫𝔶 𝔱𝔢𝔵𝔱\n
-<b>/𝔲𝔫𝔷𝔦𝔭</b> - ℬ𝔬𝔪𝔟𝔬 𝔲𝔫𝔷𝔦𝔭 𝔸 𝔣𝔦𝔩𝔢\n
-<b>/𝔦𝔭</b> - ℬ𝔬𝔪𝔟𝔬 𝔠𝔥𝔢𝔠𝔨 𝔶𝔬𝔲𝔯 𝔦𝔭 𝔞𝔡𝔭𝔯𝔢𝔰𝔰\n
-<b>/𝔯𝔞𝔫𝔡</b> - ℬ𝔬𝔪𝔟𝔬 𝔣𝔞𝔨𝔢 𝔯𝔞𝔫𝔡𝔬𝔪 𝔡𝔢𝔱𝔞𝔦𝔩𝔰\n
-<b>/𝔟𝔬𝔪𝔟</b> - ℬ𝔬𝔪𝔟𝔬 𝔡𝔦𝔰𝔱𝔲𝔯𝔟 𝔶𝔬𝔲𝔯 𝔣𝔯𝔦𝔢𝔫𝔡\n
-<b>/𝔱𝔢𝔪𝔭</b> - ℬ𝔬𝔪𝔟𝔬 𝔱𝔢𝔪𝔭 𝔪𝔞𝔦𝔩\n
-<b>/𝔱𝔵𝔱</b> - ℬ𝔬𝔪𝔟𝔬 𝔪𝔞𝔨𝔢 𝔽𝔦𝔩𝔢\n
-<b>/𝔫𝔦𝔡</b> - ℬ𝔬𝔪𝔟𝔬 𝔣𝔬𝔯 𝔫𝔦𝔡 𝔡𝔢𝔞𝔩𝔰\n
-<b>/𝔰𝔲𝔯𝔩</b> - ℬ𝔬𝔪𝔟𝔬 𝔣𝔬𝔯 𝔰𝔥𝔬𝔯𝔱 𝔲𝔯𝔩\n
- """
+tools = """<i>Available commands:</i>
+`.gscr` - `Extract email:pass`
+`.uscr` - `Extract user:pass, number:pass`
+`.paste` - `paste any text`
+`.unzip` - `unzip a file`
+`.ip` - `check your ip address`
+`.rand` - `generate random details`
+`.bomb` - `send prank messages to a friend`
+`.temp` - `create a temporary email`
+`.txt` - `create a text file`
+`.nid` - `work with nid deals`
+`.surl` - `create a short url`
+"""
 
-checkers = """<i>𝔄𝔳𝔞𝔦𝔩𝔞𝔟𝔩𝔢 𝔠𝔬𝔪𝔪𝔞𝔫𝔡𝔰:</i>\n
-<b>/𝔥𝔬𝔦</b> - ℭ𝔥𝔢𝔠𝔨 𝔜𝔬𝔲𝔯 𝔙𝔞𝔩𝔦𝔡 ℌ𝔬𝔦𝔠𝔥𝔬𝔦 ℭ𝔬𝔪𝔟𝔬\n
-<b>/𝔠𝔯𝔲𝔫</b> - ℭ𝔥𝔢𝔠𝔨 𝔜𝔬𝔲𝔯 𝔙𝔞𝔩𝔦𝔡 ℭ𝔯𝔲𝔫𝔠𝔥𝔶𝔯𝔬𝔩𝔩 ℭ𝔬𝔪𝔟𝔬\n
-<b>/𝔠𝔥𝔞𝔲𝔭𝔞𝔩</b> - ℭ𝔥𝔢𝔠𝔨 𝔜𝔬𝔲𝔯 𝔙𝔞𝔩𝔦𝔡 𝔠𝔥𝔞𝔲𝔭𝔞𝔩 ℭ𝔬𝔪𝔟𝔬\n
-<b>/𝔠𝔥𝔬𝔯</b> - ℭ𝔥𝔢𝔠𝔨 𝔜𝔬𝔲𝔯 𝔙𝔞𝔩𝔦𝔡 ℭ𝔥𝔬𝔯𝔨𝔦 ℭ𝔬𝔪𝔟𝔬\n
+checkers = """<i>Available commands:</i>
+`.hoi` - `validate hoichoi combo`
+`.crun` - `validate crunchyroll combo`
+`.chaupal` - `validate chaupal combo`
+`.chor` - `validate chorki combo`
+
 """
 
 
-others = """<i>𝔄𝔳𝔞𝔦𝔩𝔞𝔟𝔩𝔢 𝔠𝔬𝔪𝔫𝔞𝔫𝔡𝔰:</i>\n
-<code>/𝔟𝔦𝔫</code> - ℭ𝔥𝔢𝔠𝔨 𝔜𝔬𝔲𝔯 𝔅𝔦𝔫\n
-<code>/𝔟𝔶𝔭𝔞𝔰𝔰</code> - 𝔅𝔶𝔭𝔞𝔰𝔰 𝔖𝔥𝔬𝔯𝔱 𝔘𝔯𝔩!\n
-<code>/𝔯𝔢𝔪𝔳</code> - ℜ𝔢𝔪𝔬𝔳𝔢 𝔅𝔞𝔠𝔨𝔤𝔯𝔬𝔲𝔫𝔡 𝔣𝔯𝔬𝔪 𝔓𝔥𝔬𝔭𝔥𝔬𝔱𝔬\n
-<code>/𝔤𝔢𝔪𝔦</code> - 𝔊𝔬𝔬𝔤𝔩𝔢 𝔄𝔦 𝔉𝔬𝔯 ℑ𝔪𝔞𝔤𝔢𝔰 𝔞𝔫𝔡 𝔗𝔢𝔵𝔱 𝔓𝔯𝔬𝔠𝔢𝔰𝔰𝔦𝔫𝔤\n
-<code>/𝔯𝔢𝔡𝔢𝔢𝔪</code> - 𝔅𝔲𝔶 𝔓𝔯𝔢𝔪𝔦𝔲𝔪</b>\n
+others = """<i>Available commands:</i>
+`.bin` - `validate bin`
+`.bypass` - `bypass shortened urls`
+`.remv` - `remove background from a photo`
+`.gemi` - `use google ai for images and text`
+`.genimg` - `generate an image`
+`.gpt` - `translate text`
+`.dl` - `download telegram-restricted videos`
+`.redeem` - `purchase premium access`
+
+"""
+Gates = """<i>Available commands:</i>
+`.vbv` - `check your 3ds card (vbv)`
+`.3ds` - `validate your 3ds card`
+`.b3` - `perform braintree authentication`
+`.chk` - `remove background from a photo`
+`.auth` - `use google ai for image and text processing`
+`.ayden` - `purchase premium access`
+
 """
 
-Gates = """<i>𝔄𝔳𝔞𝔦𝔩𝔞𝔟𝔩𝔢 𝔠𝔬𝔮𝔫𝔞𝔡𝔰:</i>\n
-<b>/𝔳𝔟𝔳</b> - ℬ𝔬𝔪𝔟𝔬 𝔠𝔥𝔢𝔠𝔨 𝔶𝔬𝔲𝔯 3𝔡𝔰 𝔠𝔞𝔯𝔡\n
-<b>/3𝔡𝔰</b> - ℬ𝔬𝔪𝔟𝔬 𝔠𝔥𝔢𝔠𝔨 𝔶𝔬𝔲𝔯 3𝔡𝔰 𝔠𝔞𝔯𝔡\n
-<b>/𝔟3</b> - ℬ𝔬𝔪𝔟𝔬 𝔟𝔯𝔞𝔦𝔫𝔱𝔯𝔢 𝔞𝔲𝔱𝔥\n
-<b>/𝔠𝔥𝔨</b> - ℬ𝔬𝔪𝔟𝔬 𝔯𝔢𝔪𝔬𝔳𝔢 𝔟𝔞𝔠𝔨𝔤𝔯𝔬𝔲𝔫𝔡 𝔣𝔯𝔬𝔪 𝔭𝔥𝔬𝔱𝔬\n
-<b>/𝔞𝔲𝔱𝔥</b> - ℬ𝔬𝔪𝔟𝔬 𝔤𝔬𝔬𝔤𝔩𝔢 𝔞𝔦 𝔣𝔬𝔯 𝔦𝔮𝔞𝔤𝔢𝔰 𝔞𝔫𝔡 𝔱𝔢𝔵𝔱 𝔭𝔯𝔬𝔠𝔢𝔰𝔰𝔦𝔫𝔤\n
-<b>/𝔞𝔶𝔡𝔢𝔫</b> - ℬ𝔬𝔪𝔟𝔬 𝔟𝔲𝔶 𝔭𝔯𝔢𝔪𝔦𝔲𝔪\n
-"""
 
-admin = """<i>𝔄𝔳𝔞𝔦𝔩𝔞𝔟𝔩𝔢 𝔠𝔬𝔮𝔫𝔞𝔡𝔰:</i> 
-<b>/𝔯𝔢𝔤𝔦𝔰𝔱𝔢𝔯</b> - <i>𝔄𝔡𝔡 𝔲𝔰𝔢𝔯𝔰</i>\n
-<b>/𝔲𝔫𝔯𝔢𝔤𝔦𝔰𝔱𝔢𝔯</b> - <i>ℜ𝔢𝔪𝔬𝔳𝔢 𝔲𝔰𝔢𝔯𝔰</i>\n
-<b>/𝔲𝔰𝔢𝔯𝔩𝔦𝔰𝔱</b> - <i>𝔖𝔥𝔬𝔴 𝔲𝔰𝔢𝔯𝔰</i>\n
-<b>/𝔯𝔢𝔰𝔱𝔞𝔯𝔱</b> - <i>ℜ𝔢𝔰𝔱ᵃʳ𝔱 ʸᵒᵘʳ 𝔭ʳᵒᵍʳᵃᵐ</i>\n
-<b>/𝔰𝔭𝔢𝔢𝔡𝔱𝔢𝔰𝔱</b> - <i>𝔗𝔢𝔰𝔱 ʸᵒᵘʳ 𝔰ᵉʳᵛᵉʳ 𝔰𝔭𝔢𝔢𝔡!</i>\n
+admin = """<i>Available commands:</i>
+`.register` - `add a user`
+`.unregister` - `remove a user`
+`.userlist` - `display the list of users`
+`.restart` - `restart the program`
+`.speedtest` - `test server speed`
 """
 
 
@@ -130,29 +137,29 @@ async def cmd(client, callback_query):
     response = callback_query.data
     message = callback_query.message
     try:
-        if response == "tool":
+        if response == "tool" and callback_query.message.text != f"{tools}\n":
             await callback_query.edit_message_text(
                 f"{tools}\n", reply_markup=tools_Click
             )
 
-        elif response == "checkers":
+        elif response == "checkers" and callback_query.message.text != f"{checkers}\n":
             await callback_query.edit_message_text(
                 f"{checkers}\n", reply_markup=_cmd_button
             )
 
-        elif response == "others":
+        elif response == "others" and callback_query.message.text != f"{others}\n":
             await callback_query.edit_message_text(
                 f"{others}\n", reply_markup=_cmd_button
             )
-        elif response == "gates":
+        elif response == "gates" and callback_query.message.text != f"{Gates}\n":
             await callback_query.edit_message_text(
                 f"{Gates}\n", reply_markup=_cmd_button
             )
-        elif response == "admin":
+        elif response == "admin" and callback_query.message.text != f"{admin}\n":
             await callback_query.edit_message_text(
                 f"{admin}\n", reply_markup=_cmd_button
             )
-        elif response == "back":
+        elif response == "back" and callback_query.message.text != f"{admin}\n":
             await callback_query.edit_message_text(
                 f"{admin}\n", reply_markup=_cmd_button
             )
@@ -409,5 +416,7 @@ async def cmd(client, callback_query):
             await callback_query.edit_message_text("Session Closed✅")
         elif response == "regenerateadds":
             await regenerate_callback(client, callback_query)
+    except MessageNotModified:
+        await callback_query.answer("Click Another Button!..")
     except Exception as e:
         print(f"An error occurred: {e}")

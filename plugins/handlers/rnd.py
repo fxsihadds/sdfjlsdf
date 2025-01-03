@@ -8,7 +8,7 @@ from pyrogram.types import (
 import requests
 
 
-@Client.on_message(filters.command("fake"))
+@Client.on_message(filters.command("fake", ["/", "."]))
 async def rand_helper_command(_, cmd: Message):
     status = await cmd.reply_text("<b>⎚ `Generating...`</b>")
     try:

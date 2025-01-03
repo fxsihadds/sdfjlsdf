@@ -1,29 +1,23 @@
-# This is under developement
-
-"""from pyrogram import Client, filters
-from pyrogram.types import Message
-import os
-from pyppeteer import launch
+"""import requests
+import imgkit
+from pyrogram import Client, filters
 
 
-@Client.on_message(filters.command(["ss", ".", "/"]) & filters.private)
-async def take_screenshot(bot: Client, cmd: Message):
+@Client.on_message(filters.command("screenshot"))
+async def screenshot(client, message):
+    if len(message.command) != 2:
+        await message.reply_text("Usage: /screenshot <URL>")
+        return
+
+    url = message.command[1]
+
     try:
-        status = await cmd.reply_text("<b>⎚ `Screenshot Taking...`</b>")
-        _, web = cmd.text.split(" ", 1)
-    except ValueError as e:
-        await status.edit_text('</b>Please Using Like /ss Then Any Url.</b>')
-    await take_screenshot_and_reply(bot, cmd, cmd.chat.id, web)
-    await status.delete()
-
-
-async def take_screenshot_and_reply(bot: Client, cmd: Message, chat_id: int, url: str):
-    browser = await launch()
-    page = await browser.newPage()
-    await page.goto(url)
-    screenshot_path = "screenshot.png"
-    await page.screenshot({"path": screenshot_path})
-    await browser.close()
-    await bot.send_photo(chat_id, photo=screenshot_path, caption=url)
-    os.remove(screenshot_path)
+        response = requests.get(url)
+        if response.status_code == 200:
+            imgkit.from_url(url, 'screenshot.jpg')
+            await message.reply_photo('screenshot.jpg')
+        else:
+            await message.reply_text("Failed to retrieve the webpage.")
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {e}")
 """
