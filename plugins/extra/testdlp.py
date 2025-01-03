@@ -98,7 +98,8 @@ async def download_file(urls, message, output_dir="."):
     ydl_opts = {
         'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
         'format': 'best',
-        'progress_hooks': [lambda p: progress_callback(p, status)]
+        'progress_hooks': [lambda p: progress_callback(p, status)],
+        'cookiefile': 'helpers/cookie.txt',
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
