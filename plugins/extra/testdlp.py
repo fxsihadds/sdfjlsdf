@@ -40,13 +40,12 @@ async def register_command(client: Client, message: Message):
     else:
         loop = asyncio.get_event_loop()
         await handle_user_request(loop, urls, message, dl_path)
-        await client.delete_messages(chat_id= message.chat.id, message_ids=[message.id])
+        await client.delete_messages(chat_id=message.chat.id, message_ids=[message.id])
 
 
 async def handle_user_request(loop, urls, message, dl_path):
     await asyncio.gather(
-        loop.run_in_executor(None, download_and_upload,
-                             urls, message, dl_path)
+        loop.run_in_executor(None, download_and_upload, urls, message, dl_path)
     )
 
 
@@ -57,7 +56,7 @@ def download_and_upload(urls, message, dl_path):
 
 def progress_callback(progress, status):
     display_message = ""
-    if progress['status'] == 'downloading':
+    if progress["status"] == "downloading":
         now = time.time()
         diff = now - start_time
         downloaded = progress.get("downloaded_bytes")
@@ -67,21 +66,25 @@ def progress_callback(progress, status):
             percentage = downloaded * 100 / total_length
             speed = downloaded / diff
             elapsed_time = round(diff) * 1000
-            time_to_completion = round(
-                (total_length - downloaded) / speed) * 1000
+            time_to_completion = round((total_length - downloaded) / speed) * 1000
             estimated_total_time = elapsed_time + time_to_completion
             try:
-                current_message = "<b>Downloading to my server... 📥</b>\n" + Translation.DISPLAY_PROGRESS.format(
-                    "".join(["●" for i in range(math.floor(percentage / 5))]),
-                    "".join(
-                        ["○" for i in range(20 - math.floor(percentage / 5))]),
-                    round(percentage, 2),
-                    file_name.split("/")[-1],
-                    humanbytes(downloaded),
-                    humanbytes(total_length),
-                    humanbytes(speed),
-                    TimeFormatter(
-                        time_to_completion) if time_to_completion != "" else "0 s"
+                current_message = (
+                    "<b>Downloading to my server... 📥</b>\n"
+                    + Translation.DISPLAY_PROGRESS.format(
+                        "".join(["●" for i in range(math.floor(percentage / 5))]),
+                        "".join(["○" for i in range(20 - math.floor(percentage / 5))]),
+                        round(percentage, 2),
+                        file_name.split("/")[-1],
+                        humanbytes(downloaded),
+                        humanbytes(total_length),
+                        humanbytes(speed),
+                        (
+                            TimeFormatter(time_to_completion)
+                            if time_to_completion != ""
+                            else "0 s"
+                        ),
+                    )
                 )
                 if current_message != display_message:
                     status.edit_text(current_message)
@@ -96,10 +99,10 @@ async def download_file(urls, message, output_dir="."):
     display_message = ""
     status = await message.reply("<b>⎚ `Downloading...`</b>")
     ydl_opts = {
-        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
-        'format': 'best',
-        'progress_hooks': [lambda p: progress_callback(p, status)],
-        'cookiefile': 'helpers/cookie.txt',
+        "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
+        "format": "best",
+        "progress_hooks": [lambda p: progress_callback(p, status)],
+        "cookiefile": "helpers/cookie.txt",
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -110,7 +113,7 @@ async def download_file(urls, message, output_dir="."):
             await status.delete()
         except yt_dlp.utils.DownloadError as e:
             LOGGER.error(e)
-            await message.reply(str('Something Went Wrong'))
+            await message.reply(str("Something Went Wrong"))
             await status.delete()
 
 
@@ -126,7 +129,7 @@ async def upload_files(dl_path, message):
             os.remove(files)
         else:
             # await message.reply("<b>Error Uploading The File</b>")
-            print('Maybe File handle Error')
+            print("Maybe File handle Error")
             os.remove(files)
 
 
@@ -140,8 +143,7 @@ async def send_media(file_name, update):
     try:
         if os.path.isfile(file_name):
             start_time = time.time()
-            caption = file_name if '/' not in file_name else file_name.split(
-                '/')[-1]
+            caption = file_name if "/" not in file_name else file_name.split("/")[-1]
             captionss = os.path.basename(file_name)
             progress_argss = "<b>⎚ Uploading File...</b>"
             info_msg = await update.reply("<b>⎚ `Uploading...`</b>")
@@ -149,7 +151,21 @@ async def send_media(file_name, update):
             if size:
                 durations = get_video_duration(file_name)
                 thumbs = thumbnail_video(file_name)
-                if file_name.lower().endswith(('.mkv', '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.mpeg', '.3gp', '.ogg')):
+                if file_name.lower().endswith(
+                    (
+                        ".mkv",
+                        ".mp4",
+                        ".avi",
+                        ".mov",
+                        ".wmv",
+                        ".flv",
+                        ".webm",
+                        ".m4v",
+                        ".mpeg",
+                        ".3gp",
+                        ".ogg",
+                    )
+                ):
                     if Config.IS_PREMIUM:
                         await user.send_video(
                             chat_id=update.chat.id,
@@ -158,46 +174,45 @@ async def send_media(file_name, update):
                             thumb=thumbs,
                             duration=durations,
                             progress=progress_for_pyrogram,
-                            progress_args=(progress_argss,info_msg,captionss,start_time)
-
-
+                            progress_args=(
+                                progress_argss,
+                                info_msg,
+                                captionss,
+                                start_time,
+                            ),
                         )
                     else:
-                        await update.reply_video(file_name, caption=captionss, thumb=thumbs, duration=durations,
-                                                quote=True,
-                                                progress=progress_for_pyrogram,
-                                                progress_args=(
-                                                    progress_argss,
-                                                    info_msg,
-                                                    captionss,
-                                                    start_time
-                                                )
-                                                )
+                        await update.reply_video(
+                            file_name,
+                            caption=captionss,
+                            thumb=thumbs,
+                            duration=durations,
+                            quote=True,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                progress_argss,
+                                info_msg,
+                                captionss,
+                                start_time,
+                            ),
+                        )
                         os.remove(thumbs)
-                elif file_name.lower().endswith(('.jpg', '.jpeg', '.png')):
+                elif file_name.lower().endswith((".jpg", ".jpeg", ".png")):
                     await update.reply_photo(
                         file_name,
                         caption=captionss,
                         quote=True,
                         progress=progress_for_pyrogram,
-                        progress_args=(
-                            progress_argss,
-                            info_msg,
-                            captionss,
-                            start_time
-                        ))
-                elif file_name.lower().endswith('.mp3'):
+                        progress_args=(progress_argss, info_msg, captionss, start_time),
+                    )
+                elif file_name.lower().endswith(".mp3"):
                     await update.reply_audio(
                         file_name,
                         caption=captionss,
                         quote=True,
                         progress=progress_for_pyrogram,
-                        progress_args=(
-                            progress_argss,
-                            info_msg,
-                            captionss,
-                            start_time
-                        ))
+                        progress_args=(progress_argss, info_msg, captionss, start_time),
+                    )
                 else:
                     if Config.IS_PREMIUM:
                         await user.send_document(
@@ -205,22 +220,27 @@ async def send_media(file_name, update):
                             document=file_name,
                             caption=captionss,
                             progress=progress_for_pyrogram,
-                            progress_args=(progress_argss,info_msg,captionss,start_time)
-
-
+                            progress_args=(
+                                progress_argss,
+                                info_msg,
+                                captionss,
+                                start_time,
+                            ),
                         )
                     else:
 
                         await update.reply_document(
-                            file_name, caption=captionss,
+                            file_name,
+                            caption=captionss,
                             quote=True,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 progress_argss,
                                 info_msg,
                                 captionss,
-                                start_time
-                            ))
+                                start_time,
+                            ),
+                        )
 
                 await info_msg.delete()
 
