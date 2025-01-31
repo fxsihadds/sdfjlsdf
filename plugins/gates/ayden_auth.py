@@ -5,7 +5,7 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import random
-from helpers.timemanager import run_sync_in_thread
+from helpers.timemanager import run_sync_in_thread_running_loop
 import base64, json, uuid, string, time, os, json
 import re
 
@@ -92,7 +92,6 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
                         time.sleep(8)
                         # Call your check_vbv function
                         R1 = BraintreeAuth()
-                        R1._post_request_site()
                         await R1._Post_GraphQL_Api(cc.strip(), exp, exy, cvc, bot, cmd)
                         # await check_vbv(cc.strip(), exp, exy, cvc, bot, cmd)
                     except ValueError:
@@ -127,7 +126,6 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
 
             # Call your check_vbv function
             R1 = BraintreeAuth()
-            R1._post_request_site()
             await R1._Post_GraphQL_Api(cc.strip(), exp, exy, cvc, bot, cmd)
             await status.delete()
         except IndexError:
@@ -207,7 +205,8 @@ class BraintreeAuth:
         fingerprint = base64_bytes["authorizationFingerprint"]
         return fingerprint, nonce1
 
-    async def _Post_GraphQL_Api(self, card_number, exp_month, exp_year, cvv, bot, cmd):
+    @run_sync_in_thread_running_loop
+    def _Post_GraphQL_Api(self, card_number, exp_month, exp_year, cvv, bot, cmd):
         fingerprint, nonce = self._post_request_site()
         headers = {
             "Host": "payments.braintree-api.com",
@@ -301,7 +300,7 @@ class BraintreeAuth:
 <b>Bank ⇾</b> {requ['bank']}
 <b>Response Time ⇾</b> <code>2.{random.randint(1, 9)} seconds</code>
 """
-                await cmd.reply_text(message_text)
+                cmd.reply_text(message_text)
                 print(error_msg)
             else:
                 match = re.search(r"Reason:\s*(.+)", error_msg)
@@ -319,7 +318,7 @@ class BraintreeAuth:
 <b>Bank ⇾</b> {requ['bank']}
 <b>Response Time ⇾</b> <code>2.{random.randint(0, 9)} seconds</code>
 """
-                await cmd.reply_text(message_text)
+                cmd.reply_text(message_text)
                 print(error_msg)
 
     @staticmethod
