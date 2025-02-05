@@ -90,12 +90,12 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
             await status.delete()
         except IndexError:
             await status.edit_text(
-                "<b>⎚ Use <code>/stauth </code> Checks your Card</b>"
+                "<b>⎚ Use <code>/stauth </code> Checks your CC</b>"
             )
         except Exception as e:
             print(f"Error processing command: {e}")
     else:
-        await status.edit_text("<b>⎚ Use <code>/stauth </code> Checks Your Card</b>")
+        await status.edit_text("<b>⎚ Use <code>/stauth </code> Checks Your CC</b>")
 
 
 class StripeAuth:

@@ -1,23 +1,42 @@
-"""import requests
-import imgkit
+import psutil
+import platform
 from pyrogram import Client, filters
 
 
-@Client.on_message(filters.command("screenshot"))
-async def screenshot(client, message):
-    if len(message.command) != 2:
-        await message.reply_text("Usage: /screenshot <URL>")
-        return
+@Client.on_message(filters.command("sysinfo", ["/", "."]))
+async def system_info(client, message):
+    uname = platform.uname()
+    svmem = psutil.virtual_memory()
+    disk = psutil.disk_usage("/")
 
-    url = message.command[1]
+    response = f"""
+**System Information:**
+**System:** `{uname.system}`
+**Node Name:** `{uname.node}`
+**Release:** `{uname.release}`
+**Version:** `{uname.version}`
+**Machine:** `{uname.machine}`
+**Processor:** `{uname.processor}`
 
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            imgkit.from_url(url, 'screenshot.jpg')
-            await message.reply_photo('screenshot.jpg')
-        else:
-            await message.reply_text("Failed to retrieve the webpage.")
-    except Exception as e:
-        await message.reply_text(f"An error occurred: {e}")
-"""
+**Memory Information:**
+**Total:** `{get_size(svmem.total)}`
+**Available:** `{get_size(svmem.available)}`
+**Used:** `{get_size(svmem.used)}`
+**Percentage:** `{svmem.percent}%`
+
+**Disk Information:**
+**Total:** `{get_size(disk.total)}`
+**Used:** `{get_size(disk.used)}`
+**Free:** `{get_size(disk.free)}`
+**Percentage:** `{disk.percent}%`
+    """
+
+    await message.reply(response)
+
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f} {unit}{suffix}"
+        bytes /= factor

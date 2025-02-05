@@ -134,11 +134,11 @@ async def sihad_check_braintree_new_card(bot: Client, cmd: Message):
             await R1._Post_GraphQL_Api(cc.strip(), exp, exy, cvc, bot, cmd)
             await status.delete()
         except IndexError:
-            await status.edit_text("<b>⎚ Use <code>/bb </code> Checks VBV Card</b>")
+            await status.edit_text("<b>⎚ Use <code>/bb </code> Check your CC</b>")
         except Exception as e:
             print(f"Error processing command: {e}")
     else:
-        await status.edit_text("<b>⎚ Use <code>/bb </code> Checks VBV Card</b>")
+        await status.edit_text("<b>⎚ Use <code>/bb </code> Check Your CC</b>")
 
 
 class BraintreeAuth:
