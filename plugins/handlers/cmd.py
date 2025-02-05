@@ -302,10 +302,13 @@ async def cmd(client, callback_query):
                 await callback_query.edit_message_text(
                     "<b>1 Week Subscription - 2$</b>"
                 )
-
-                sub = suh.start_subscription("weekly")
-                sub_info = suh.get_subscription_info()
-                msg = f"""
+                user_res_1 = await client.ask(
+                    message.chat.id, "Send Your Payment ID:✍"
+                )
+                if user_res_1.text == "ANTORWKBUY":
+                    sub = suh.start_subscription("weekly")
+                    sub_info = suh.get_subscription_info()
+                    msg = f"""
 
 <b>Subscription Activated!</b>
 <b>User ID</b>: {callback_query.from_user.id}
@@ -314,7 +317,7 @@ Start Date: {sub_info.get('start_date', 'N/A')}
 End Date: {sub_info.get('end_date', 'N/A')}
 Status: {sub_info.get('status', 'N/A')}
 """
-                await callback_query.edit_message_text(msg)
+                    await callback_query.reply_text(msg)
         elif response == "infoo":
             sub = Subscription(callback_query.from_user.id)
             sub_info = sub.get_subscription_info()
