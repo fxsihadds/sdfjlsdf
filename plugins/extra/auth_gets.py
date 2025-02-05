@@ -54,7 +54,9 @@ def email_braintree():
 
 @Client.on_message(filters.command('auth'))
 async def check_card(bot: Client, cmd: Message):
+    return await cmd.reply_text('We are currently working on this feature. Please try again later.')
     status = await cmd.reply_text("<b>⎚ `Processing ...`</b>")
+
 
     # Check if the command is a reply to a message with a text/plain document
     if cmd.reply_to_message and cmd.reply_to_message.document and cmd.reply_to_message.document.mime_type == 'text/plain':

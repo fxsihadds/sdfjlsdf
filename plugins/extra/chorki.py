@@ -14,6 +14,9 @@ head = {
 
 @Client.on_message(filters.command("chor", ["/", "."]))
 async def hoichoi_helper_command(app: Client, message: Message):
+    return await message.reply_text(
+        text="We are currently working on this feature. Please try again later."
+    )
     status = await message.reply_text('<i>Chorki Checking...</i>')
     try:
         # Check if the message contains an attached document

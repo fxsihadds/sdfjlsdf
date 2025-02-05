@@ -1,4 +1,4 @@
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import wget
 import requests as re
@@ -14,7 +14,8 @@ from helpers.display_progress import progress_for_pyrogram
 from ..handlers.testline import find_strings_from_txt
 from pprint import pformat
 from ..handlers.Translate_gpt import Translate_text
-from pyrogram.errors import MessageNotModified  # Import the MessageNotModified error
+from pyrogram.errors import MessageNotModified  # Import the MessageNotModified
+from helpers.User_Control import Subscription, user_check, subs_button
 
 # Define the InlineKeyboardMarkup
 _cmd_button = InlineKeyboardMarkup(
@@ -94,10 +95,14 @@ others = """<i>Available commands:</i>
 Gates = """<i>Available commands:</i>
 `.vbv` - `check your 3ds card (vbv)`
 `.3ds` - `validate your 3ds card`
-`.b3` - `perform braintree authentication`
-`.chk` - `remove background from a photo`
-`.auth` - `use google ai for image and text processing`
-`.ayden` - `purchase premium access`
+`.b3` - `check your cc with braintree`
+`.chk` - `check your cc with stripe`
+`.auth` - `check your cc with braintree`
+`.ayden` - `check your cc with ayden`
+`.pp` - `check your cc with paypal`
+`.stauth` - `check your cc with stripe`
+`.bb` - `check your cc with bb`
+`.cc` - `check your cc with braintree`
 
 """
 
@@ -112,21 +117,13 @@ admin = """<i>Available commands:</i>
 
 
 @Client.on_message(filters.command(["help", "start"]) & filters.incoming)
-async def help_command(Client, message):
-    user_id = message.from_user.id
+async def help_command(bot: Client, cmd: Message):
+    await bot.send_chat_action(chat_id=cmd.chat.id, action=enums.ChatAction.TYPING)
     # force_sub = await ForceSub(Client, message)
-    is_exsists = is_exsist(user_id)
     # if force_sub == 400: return
-    if not is_exsists:
-        await message.reply_text("<code>𝖈𝖔𝖒𝖒𝖆𝖓𝖉𝖘: </code>", reply_markup=_cmd_button)
-        adduser(bot=Client, cmd=message)
-    else:
-        await message.reply_text("<code>𝖈𝖔𝖒𝖒𝖆𝖓𝖉𝖘: </code>", reply_markup=_cmd_button)
-    global main_admin
-    with open(
-        file="plugins/ExtraMod/users/admin.txt", mode="r+", encoding="utf-8"
-    ) as admin:
-        main_admin = admin.readlines()
+    user = await user_check(bot, cmd)
+    if user:
+        await cmd.reply_text("<code>𝖈𝖔𝖒𝖒𝖆𝖓𝖉𝖘: </code>", reply_markup=_cmd_button)
 
 
 email = ""
@@ -286,6 +283,63 @@ async def cmd(client, callback_query):
             )
             os.remove(output_path)
             os.remove(video_path)
+        elif response == "buy_subs":
+            suh = Subscription(callback_query.from_user.id)
+            await callback_query.edit_message_text(
+                "<b>I Have only 1 Plan!</b> \n`1 weekly - 2$`"
+            )
+            if suh.is_active():
+                info_subs_get = suh.get_subscription_info()
+                await callback_query.edit_message_text(
+                    f"<b>You already have an active {info_subs_get.get('plan', 'N/A')} subscription! \n  Buy After Expired</b>",
+                    reply_markup=subs_button,
+                )
+                return
+            user_res = await client.ask(
+                message.chat.id, "Do You Want to Active?(yes/no):✍"
+            )
+            if user_res.text.lower() == "yes":
+                await callback_query.edit_message_text(
+                    "<b>1 Week Subscription - 2$</b>"
+                )
+
+                sub = suh.start_subscription("weekly")
+                sub_info = suh.get_subscription_info()
+                msg = f"""
+
+<b>Subscription Activated!</b>
+<b>User ID</b>: {callback_query.from_user.id}
+Plan: {sub_info.get('plan', 'N/A')}
+Start Date: {sub_info.get('start_date', 'N/A')}
+End Date: {sub_info.get('end_date', 'N/A')}
+Status: {sub_info.get('status', 'N/A')}
+"""
+                await callback_query.edit_message_text(msg)
+        elif response == "infoo":
+            sub = Subscription(callback_query.from_user.id)
+            sub_info = sub.get_subscription_info()
+
+            msg = f"""
+<b>User ID</b>: {callback_query.from_user.id}
+Plan: {sub_info.get('plan', 'N/A')}
+Start Date: {sub_info.get('start_date', 'N/A')}
+End Date: {sub_info.get('end_date', 'N/A')}
+Status: {sub_info.get('status', 'N/A')}
+"""
+            await callback_query.edit_message_text(msg, reply_markup=subs_button)
+        elif response == "freetrails":
+            sub = Subscription(callback_query.from_user.id)
+            subcribe = sub.start_subscription("free_trial")
+            sub_info = sub.get_subscription_info()
+            msg = f"""
+<b>Free Trial Activated!</b>
+<b>User ID</b>: {callback_query.from_user.id}
+Plan: {sub_info.get('plan', 'N/A')}
+Start Date: {sub_info.get('start_date', 'N/A')}
+End Date: {sub_info.get('end_date', 'N/A')}
+Status: {sub_info.get('status', 'N/A')}
+"""
+            await callback_query.edit_message_text(msg, reply_markup=subs_button)
 
         elif response == "generatetemp":
             global email
@@ -328,6 +382,7 @@ async def cmd(client, callback_query):
                     "No messages were received..\nin your Mailbox " + email,
                     show_alert=True,
                 )
+
         elif response == "view_msgtemp":
             msg = re.get(
                 "https://www.1secmail.com/api/v1/?action=readMessage&login="

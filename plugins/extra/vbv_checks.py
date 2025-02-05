@@ -50,6 +50,8 @@ def get_name_rand():
 
 @Client.on_message(filters.command('vbv'))
 async def check_card(bot: Client, cmd: Message):
+    return await cmd.reply_text(
+        text="We are currently working on this feature. Please try again later.")
     status = await cmd.reply_text("<b>⎚ `Processing ...`</b>")
     
     # Check if the command is a reply to a message with a text/plain document

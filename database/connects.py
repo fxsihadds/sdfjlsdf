@@ -5,7 +5,7 @@ uri = "mongodb+srv://sihadmiah7:CVrtlv9QKl4mhjCi@telegrambot.unrrxv0.mongodb.net
 
 def connect_db():
     myclient = pymongo.MongoClient(uri)
-    mydb = myclient['tgbotusers']
+    mydb = myclient['subsciptions']
     # Insert a document into a collection to create the database
-    mycollection = mydb['users']
+    mycollection = mydb['buyers']
     return mycollection

@@ -140,5 +140,5 @@ class Scrapper:
                 print("NOT FOUND!")
 
 
-#rq1 = Scrapper("Tale of the Nine Tailed")
-#rq1._x__request()
+"""rq1 = Scrapper("Tale of the Nine Tailed")
+rq1._x__request()"""

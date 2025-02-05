@@ -1,4 +1,4 @@
-# This is Under development!
+"""# This is Under development!
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 from random import choice
@@ -85,3 +85,4 @@ async def main(combos_file, proxy_file):
         proxies = read_proxies(proxy_file)
         with concurrent.futures.ThreadPoolExecutor(threads) as executor:
             executor.map(checker, combos, [proxies] * len(combos))
+"""

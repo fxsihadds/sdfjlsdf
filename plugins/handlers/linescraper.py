@@ -6,7 +6,7 @@ from helpers.display_progress import progress_for_pyrogram
 from time import perf_counter
 import time
 import chardet
-from helpers.timemanager import run_sync_in_thread, run_sync_in_thread_running_loop
+from helpers.timemanager import run_sync_in_thread_running_loop
 
 
 @Client.on_message(filters.command('lscr'))

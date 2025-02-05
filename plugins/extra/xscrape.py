@@ -4,7 +4,8 @@ from urllib.parse import urlparse
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from userc import LOGGER, user
-from config import Config 
+from config import Config
+from helpers.User_Control import user_check
 
 
 def remove_duplicates(messages):
@@ -12,10 +13,11 @@ def remove_duplicates(messages):
     duplicates_removed = len(messages) - len(unique_messages)
     return unique_messages, duplicates_removed
 
+
 async def scrape_messages(_, channel_username, limit, start_number=None):
     messages = []
     count = 0
-    pattern = r'\d{16}\D*\d{2}\D*\d{2,4}\D*\d{3,4}'
+    pattern = r"\d{16}\D*\d{2}\D*\d{2,4}\D*\d{3,4}"
     async for message in user.search_messages(channel_username):
         if count >= limit:
             break
@@ -25,7 +27,7 @@ async def scrape_messages(_, channel_username, limit, start_number=None):
             if matched_messages:
                 formatted_messages = []
                 for matched_message in matched_messages:
-                    extracted_values = re.findall(r'\d+', matched_message)
+                    extracted_values = re.findall(r"\d+", matched_message)
                     if len(extracted_values) == 4:
                         card_number, mo, year, cvv = extracted_values
                         year = year[-2:]
@@ -37,8 +39,11 @@ async def scrape_messages(_, channel_username, limit, start_number=None):
     messages = messages[:limit]
     return messages
 
-@Client.on_message(filters.command('ccscr'))
+
+@Client.on_message(filters.command("ccscr"))
 async def scr_cmd(bot: Client, cmd: Message):
+    if not await user_check(bot, cmd):
+        return
     args = cmd.text.split()[1:]
     if len(args) < 2 or len(args) > 3:
         await cmd.reply_text("<b>/ccscr channel username and amount</b>")
@@ -53,7 +58,9 @@ async def scr_cmd(bot: Client, cmd: Message):
 
     start_number = args[2] if len(args) == 3 else None
     parsed_url = urlparse(channel_identifier)
-    channel_username = parsed_url.path.lstrip('/') if not parsed_url.scheme else channel_identifier
+    channel_username = (
+        parsed_url.path.lstrip("/") if not parsed_url.scheme else channel_identifier
+    )
     print(f"Channel username: {channel_username}")
     try:
         chat = await user.get_chat(channel_username)
@@ -70,9 +77,9 @@ async def scr_cmd(bot: Client, cmd: Message):
     unique_messages, duplicates_removed = remove_duplicates(scrapped_results)
     if unique_messages:
         file_name = f"x{len(unique_messages)}_{channel_name.replace(' ', '_')}.txt"
-        with open(file_name, 'w') as f:
+        with open(file_name, "w") as f:
             f.write("\n".join(unique_messages))
-        with open(file_name, 'rb') as f:
+        with open(file_name, "rb") as f:
             caption = (
                 f"<b>CC Scrapped ✅</b>\n"
                 f"<b>━━━━━━━━━━━━━━━━</b>\n"

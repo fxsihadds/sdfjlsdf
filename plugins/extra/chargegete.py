@@ -10,6 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 @Client.on_message(filters.command('chk'))
 async def check_card(bot: Client, cmd: Message):
+    return await cmd.reply_text('We are currently working on this feature. Please try again later.')
     status = await cmd.reply_text("<b>⎚ `Processing ...`</b>")
 
     if cmd.reply_to_message and cmd.reply_to_message.document and cmd.reply_to_message.document.mime_type == 'text/plain':
@@ -265,25 +266,4 @@ def check_vbv(cc, exp, exy, cvc):
                     
 #check_vbv(cc='4960780014428236', exp='07', exy='27', cvc='672')
 
-'''file = 'card.txt'
-g = open(file, 'r')
-for g in g:
-    c = g.strip().split('\n')[0]
-    cc = c.split('|')[0]
-    exp = c.split('|')[1]
-    ex = c.split('|')[2]
-    try:
-        exy = ex[2]+ex[3]
-        if '2' in ex[3] or '1' in ex[3]:
-            exy = ex[2]+'7'
-        else:
-            pass
-    except:
-        exy = ex[0]+ex[1]
-        if '2' in ex[1] or '1' in ex[1]:
-            exy = ex[0]+'7'
-        else:
-            pass
-    cvc = c.split('|')[3]
-    
-'''
+

