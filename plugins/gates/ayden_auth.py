@@ -56,10 +56,11 @@ def get_name_rand():
 
 @Client.on_message(filters.command("bb"))
 async def check_braintree_new_card(bot: Client, cmd: Message):
-    if not await user_check(bot, cmd):
+    user = await user_check(bot, cmd)
+    if not user:
         return
     status = await cmd.reply_text("<b>⎚ `Processing ...`</b>")
-    
+
     # Check if the command is a reply to a message with a text/plain document
     if (
         cmd.reply_to_message
@@ -70,6 +71,9 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
             # Download the document containing card data
             cards_path = await cmd.reply_to_message.download()
             with open(cards_path, "r", encoding="utf-8") as f:
+                if len(f.readlines()) > int(user):
+                    # os.remove(cards_path)
+                    return await status.edit_text(f"`{user} Card At a Time!`")
                 for line in f:
                     # Process each line in the file
                     c = line.strip()

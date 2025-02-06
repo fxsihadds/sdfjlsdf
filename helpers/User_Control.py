@@ -45,12 +45,15 @@ class Subscription:
 
     def is_active(self):
         sub = subscriptions.find_one({"user_id": self.user_id, "status": "Active"})
+        #print(sub['end_date'])
+        #print(sub['user_id'])
         if sub and datetime.now() < sub["end_date"]:
             return True
-        subscriptions.update_one(
-            {"user_id": self.user_id}, {"$set": {"status": "Expired"}}
-        )
-        return False
+        else:
+            subscriptions.update_one(
+                {"user_id": self.user_id}, {"$set": {"status": "Expired"}}
+            )
+            return False
 
     def renew_subscription(self, plan):
         plans = {"weekly": timedelta(days=7)}
@@ -80,10 +83,11 @@ class Subscription:
 
     def get_subscription_info(self):
         sub = subscriptions.find_one({"user_id": self.user_id})
-        
+
         if sub:
             return sub
         return sub
+
     def can_use_free_command(self):
         user_data = subscriptions.find_one({"user_id": self.user_id})
         now = datetime.now()
@@ -122,9 +126,18 @@ subs_button = InlineKeyboardMarkup(
 async def user_check(bot: Client, cmd: Message) -> bool:
     user_id = cmd.from_user.id
     sub = Subscription(user_id)
-    if not sub.is_active():
+    sub_act = sub.is_active()
+    print(sub_act)
+
+    if not sub_act:
         await cmd.reply_text(
             "<b>You don't have an active subscription!</b>", reply_markup=subs_button
         )
         return False
-    return True
+
+    plan = sub.get_subscription_info()["plan"]
+    card_number = {
+        "free_trial": 10,
+        "weekly": 50,
+    }
+    return card_number.get(plan, 0)
