@@ -316,6 +316,7 @@ End Date: {sub_info.get('end_date', 'N/A')}
 Status: {sub_info.get('status', 'N/A')}
 """
                     await callback_query.reply_text(msg)
+                    await callback_query.reply_text(msg)
         elif response == "infoo":
             sub = Subscription(callback_query.from_user.id)
             sub_info = sub.get_subscription_info()
