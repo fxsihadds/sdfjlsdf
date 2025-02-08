@@ -138,6 +138,6 @@ async def user_check(bot: Client, cmd: Message) -> bool:
     plan = sub.get_subscription_info()["plan"]
     card_number = {
         "free_trial": 10,
-        "weekly": 50,
+        "weekly": 100,
     }
     return card_number.get(plan, 0)
