@@ -5,7 +5,7 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import random
-from helpers.timemanager import run_sync_in_thread_running_loop
+from helpers.timemanager import run_sync_in_thread
 import base64, json, uuid, string, time, os, json
 import re
 from helpers.User_Control import user_check
@@ -167,7 +167,7 @@ class StripeAuth:
         client_secret = self.extract_value(response.text, '"client_secret":"', '",')
         return seti_id, client_secret
 
-    @run_sync_in_thread_running_loop
+    @run_sync_in_thread
     def _send_request(self, cc, exp, exy, cvc, bot, cmd):
         seti_id, client_secret = self._config_request()
         print(client_secret)
