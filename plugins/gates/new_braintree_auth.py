@@ -9,7 +9,7 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import random
-from helpers.timemanager import run_sync_in_thread_running_loop
+from helpers.timemanager import run_sync_in_thread
 import base64, json, uuid, string, time, os, json
 import re
 
@@ -75,7 +75,6 @@ async def sihad_check_braintree_new_card(bot: Client, cmd: Message):
             cards_path = await cmd.reply_to_message.download()
             with open(cards_path, "r", encoding="utf-8") as f:
                 if len(f.readlines()) > int(user):
-                    await status.delete()
                     #os.remove(cards_path)
                     return await status.edit_text(f"`{user} Card At a Time!`")
                 for line in f:
@@ -140,11 +139,11 @@ async def sihad_check_braintree_new_card(bot: Client, cmd: Message):
             await R1._Post_GraphQL_Api(cc.strip(), exp, exy, cvc, bot, cmd)
             await status.delete()
         except IndexError:
-            await status.edit_text("<b>⎚ Use <code>/bb </code> Check your CC</b>")
+            await status.edit_text("<b>⎚ Use <code>/cc </code> Check your CC</b>")
         except Exception as e:
             print(f"Error processing command: {e}")
     else:
-        await status.edit_text("<b>⎚ Use <code>/bb </code> Check Your CC</b>")
+        await status.edit_text("<b>⎚ Use <code>/cc </code> Check Your CC</b>")
 
 
 class BraintreeAuth:
@@ -261,7 +260,7 @@ class BraintreeAuth:
         print(fingerprint)
         return fingerprint, payment_nonce
 
-    @run_sync_in_thread_running_loop
+    @run_sync_in_thread
     def _Post_GraphQL_Api(self, card_number, exp_month, exp_year, cvv, bot, cmd):
         fingerprint, nonce = self._post_request_site()
         headers = {
