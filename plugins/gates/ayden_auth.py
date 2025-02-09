@@ -71,7 +71,7 @@ async def check_braintree_new_card(bot: Client, cmd: Message):
             # Download the document containing card data
             cards_path = await cmd.reply_to_message.download()
             with open(cards_path, "r", encoding="utf-8") as f:
-                if len(f.readlines()) > int(user):
+                if len(f.readlines()) > int(5000):
                     # os.remove(cards_path)
                     return await status.edit_text(f"`{user} Card At a Time!`")
                 for line in f:
