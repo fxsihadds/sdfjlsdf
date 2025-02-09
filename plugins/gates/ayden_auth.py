@@ -5,7 +5,7 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import random
-from helpers.timemanager import run_sync_in_thread_running_loop
+from helpers.timemanager import run_sync_in_thread
 import base64, json, uuid, string, time, os, json
 import re
 from helpers.User_Control import user_check
@@ -212,7 +212,7 @@ class BraintreeAuth:
         fingerprint = base64_bytes["authorizationFingerprint"]
         return fingerprint, nonce1
 
-    @run_sync_in_thread_running_loop
+    @run_sync_in_thread
     def _Post_GraphQL_Api(self, card_number, exp_month, exp_year, cvv, bot, cmd):
         fingerprint, nonce = self._post_request_site()
         headers = {
