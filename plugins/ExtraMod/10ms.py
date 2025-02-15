@@ -171,7 +171,7 @@ async def check_combos(client: Client, message: Message):
                     checked_combos += 1
                     pbar.update(1)
 
-                    if checked_combos % 2 == 0:
+                    if checked_combos % 20 == 0:
                         await status.edit_text(
 f"<b>10minuteschool Cracking...</b>\n"
 f"<b>✅ Checked:</b> {checked_combos}/{total_combos}\n"
