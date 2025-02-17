@@ -44,14 +44,14 @@ async def register_command(client: Client, message: Message):
         await client.delete_messages(chat_id=message.chat.id, message_ids=[message.id])
 
 
-async def handle_user_request(urls, message, dl_path):
+async def handle_user_request(urls, name, message, dl_path):
     await asyncio.gather(
-        loop.run_in_executor(None, download_and_upload, urls, message, dl_path)
+        loop.run_in_executor(None, download_and_upload, urls, name, message, dl_path)
     )
 
 
-def download_and_upload(urls, message, dl_path):
-    asyncio.run(download_file(urls, message, dl_path))
+def download_and_upload(urls, name, message, dl_path):
+    asyncio.run(download_file(urls, name, message, dl_path))
     asyncio.run(upload_files(dl_path, message))
 
 
@@ -94,14 +94,14 @@ def progress_callback(progress, status):
                 print("Error updating message:", e)
 
 
-async def download_file(urls, message, output_dir="."):
+async def download_file(urls, name, message, output_dir="."):
     global start_time, display_message
     start_time = time.time()
     display_message = ""
     status = await message.reply("<b>⎚ `Downloading...`</b>")
     if "bongobd" in urls:
         ydl_opts = {
-            "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
+            "outtmpl": f"{name}",
             "postprocessors": [
                 {
                     "key": "FFmpegVideoConvertor",  # Convert video format
