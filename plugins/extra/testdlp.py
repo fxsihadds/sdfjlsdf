@@ -29,6 +29,7 @@ class Translation(object):
 # Create a ThreadPoolExecutor
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
+loop = asyncio.get_event_loop()
 
 
 @Client.on_message(filters.command("link"))
@@ -38,12 +39,12 @@ async def register_command(client: Client, message: Message):
     if not urls:
         await message.reply("<b>⎚ Use <code>/link</code> Url To Download Your File</b>")
     else:
-        loop = asyncio.get_event_loop()
-        await handle_user_request(loop, urls, message, dl_path)
+
+        await handle_user_request(urls, message, dl_path)
         await client.delete_messages(chat_id=message.chat.id, message_ids=[message.id])
 
 
-async def handle_user_request(loop, urls, message, dl_path):
+async def handle_user_request(urls, message, dl_path):
     await asyncio.gather(
         loop.run_in_executor(None, download_and_upload, urls, message, dl_path)
     )
@@ -98,12 +99,27 @@ async def download_file(urls, message, output_dir="."):
     start_time = time.time()
     display_message = ""
     status = await message.reply("<b>⎚ `Downloading...`</b>")
-    ydl_opts = {
-        "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
-        "format": "best",
-        "progress_hooks": [lambda p: progress_callback(p, status)],
-        "cookiefile": r"helpers/cookie.txt",
-    }
+    if "bongobd" in urls:
+        ydl_opts = {
+            "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
+            "postprocessors": [
+                {
+                    "key": "FFmpegVideoConvertor",  # Convert video format
+                    "preferedformat": "mp4",  # Convert to mp4
+                }
+            ],
+            "http_headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+                "Referer": "https://bongobd.com/",
+            },
+        }
+    else:
+        ydl_opts = {
+            "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
+            "format": "best",
+            "progress_hooks": [lambda p: progress_callback(p, status)],
+            "cookiefile": "helpers/cookie.txt",
+        }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         # status = await message.reply("<b>⎚ `Downloading...`</b>")
