@@ -101,7 +101,7 @@ async def download_file(urls, name, message, output_dir="."):
     status = await message.reply("<b>⎚ `Downloading...`</b>")
     if "bongobd" in urls:
         ydl_opts = {
-            "outtmpl": os.path.join(output_dir, f"{name}"),
+            "outtmpl": os.path.join(output_dir, f"{name}.mp4"),
             "postprocessors": [
                 {
                     "key": "FFmpegVideoConvertor",  # Convert video format
